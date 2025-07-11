@@ -1,0 +1,6 @@
+train: ./train # Caminho para o diretório de treino
+val: ./val # Caminho para o diretório de validação
+
+nc: 2 # Número de classes
+
+names: ["start", "timer"]
