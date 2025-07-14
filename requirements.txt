@@ -46,4 +46,4 @@ tzdata==2024.2
 ultralytics==8.3.26
 ultralytics-thop==2.0.10
 urllib3==2.2.3
-websockets==13.1
+
