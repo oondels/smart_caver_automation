@@ -146,8 +146,10 @@ class RoboticArm {
     //* Calcular novas posições das joints
 
     // Cotovelo: posição baseada no ângulo do ombro
-    const elbowX = this.shoulderJoint.x + this.segmentLength1 * Math.cos(shoulderAngleRad);
-    const elbowY = this.shoulderJoint.y + this.segmentLength1 * Math.sin(shoulderAngleRad);
+    // const elbowX = this.shoulderJoint.x + this.segmentLength1 * Math.cos(shoulderAngleRad);
+    const elbowX = this.segmentLength1 * Math.cos(shoulderAngleRad);
+    // const elbowY = this.shoulderJoint.y + this.segmentLength1 * Math.sin(shoulderAngleRad);
+    const elbowY = this.segmentLength1 * Math.sin(shoulderAngleRad);
     
     // Garra: posição baseada na posição do cotovelo e ângulo do cotovelo
     const clawAngleFromHorizontal = shoulderAngleRad + (Math.PI - elbowAngleRad);
