@@ -6,15 +6,9 @@ import pytesseract
 import cv2
 import numpy as np
 
-pytesseract.pytesseract.tesseract_cmd = (
-    r"/usr/bin/tesseract"
-)
-model = YOLO("./train_beta/weights/best.pt")
+pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
+model = YOLO("./train_beta3/weights/best.pt")
 print("Starting real-time prediction...")
-
-# async def send_message(message):
-#     async with websockets.connect("ws://localhost:2399") as websocket:
-#         await websocket.send(message)
 
 async def main():
     while True:
@@ -28,28 +22,44 @@ async def main():
         # Fazer a predição no frame atual
         results = model.predict(source=frame, stream=False, conf=0.15)
 
-        # Para cada resultado, desenhar a caixa delimitadora e extrair a região de interesse
         for result in results:
-            for box in result.boxes.xyxy:
-                x1, y1, x2, y2 = map(int, box[:4])
-                
-                # Desenhar a caixa delimitadora na tela capturada
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                
-                roi = frame[y1:y2, x1:x2]
-                
-                print(f"Coordenadas da caixa: ({x1}, {y1}), ({x2}, {y2})")
-                # Mostrar a região de interesse
-                cv2.imshow("ROI", roi)
-                # Pressionar 'q' para sair
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    cv2.destroyAllWindows()
-                    return
-        
-        # Exibir a tela capturada completa com as detecções
-        # cv2.imshow("Tela Capturada", frame)
+            boxes = result.boxes
+            if boxes is not None:
+                for i, box in enumerate(boxes.xyxy):
+                    x1, y1, x2, y2 = map(int, box[:4])
+
+                    # Obter o nome da classe detectada
+                    class_id = int(boxes.cls[i])
+                    class_name = model.names[class_id]
+                    confidence = float(boxes.conf[i])
+
+                    # Desenhar a caixa delimitadora na tela capturada
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+                    # Adicionar o texto com o nome da classe e confiança
+                    label = f"{class_name}: {confidence:.2f}"
+                    cv2.putText(
+                        frame,
+                        label,
+                        (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 255, 0),
+                        2,
+                    )
+
+                    print(
+                        f"Detectado: {class_name} - Confiança: {confidence:.2f} - Coordenadas: ({x1}, {y1}), ({x2}, {y2})"
+                    )
+
+        # Exibir apenas a tela capturada completa com as detecções
+        # cv2.imshow("Smart Caver Detection", frame)
+
+        # Pressionar 'q' para sair
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            cv2.destroyAllWindows()
+            return
 
         await asyncio.sleep(0.5)  # Pequeno delay para não sobrecarregar o sistema
-
 
 asyncio.run(main())

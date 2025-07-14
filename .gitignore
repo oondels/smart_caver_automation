@@ -2,3 +2,5 @@
 train_*/
 *.cache
 *.pt
+runs/
+teste/
